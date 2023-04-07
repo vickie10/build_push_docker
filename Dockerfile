@@ -1,17 +1,21 @@
-# Use an official Ubuntu runtime as a parent image
+# Use the latest Ubuntu LTS as the base image
 FROM ubuntu:latest
 
-# Set the working directory to /app
+# Update the package lists and install prerequisite packages
+RUN apt-get update && \
+    apt-get install -y fortune-mod cowsay
+
+# Copy the run.sh file into the container
+COPY wisecow.sh /app/wisecow.sh
+
+# Set the working directory
 WORKDIR /app
 
-# Install Nginx
-RUN apt-get update && apt-get install -y nginx
+# Make the run.sh script executable
+RUN chmod +x /app/wisecow.sh
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Expose port 4499
+EXPOSE 4499
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
-
-# Run nginx when the container launches
-CMD ["nginx", "-g", "daemon off;"]
+# Start the run.sh script when the container starts
+CMD ["/app/wisecow.sh"]
