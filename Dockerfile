@@ -1,21 +1,25 @@
-# Use the latest Ubuntu LTS as the base image
-FROM ubuntu:latest
+FROM debian:latest
 
-# Update the package lists and install prerequisite packages
+# Install dependencies
 RUN apt-get update && \
-    apt-get install -y fortune-mod cowsay
+    apt-get install -y fortune-mod cowsay netcat && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy the run.sh file into the container
-COPY wisecow.sh /app/wisecow.sh
+# Add the PATH environment variable
+ENV PATH=$PATH:/usr/games/
+
+# Copy over the shell script
+COPY wisecow.sh app/wisecow.sh
 
 # Set the working directory
 WORKDIR /app
 
-# Make the run.sh script executable
-RUN chmod +x /app/wisecow.sh
+# Set the permission to execute the script
+RUN chmod +x wisecow.sh
 
 # Expose port 4499
 EXPOSE 4499
 
-# Start the run.sh script when the container starts
-CMD ["/app/wisecow.sh"]
+# Run the shell script on container startup
+CMD [ "bash", "/app/wisecow.sh" ]
+
